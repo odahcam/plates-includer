@@ -1,0 +1,21 @@
+{
+    "name": "odahcam/plates-includer",
+    "description": "An advanced version of the Asset Extension.",
+    "type": "extension",
+    "require": {
+        "league/plates": "^3.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luiz Filipe Machado Barni",
+            "email": "machado@odahcam.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Odahcam\\Plates\\Extension\\": "src/"
+        }
+    }
+}

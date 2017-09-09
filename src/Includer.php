@@ -80,25 +80,25 @@ class Includer implements ExtensionInterface
 
     /**
      * @param {string} $url
-     * @return string
+     * @return {string}
      */
-    public function linkCSS(string $url)
+    public function linkCSS(string $url, $attrs = [])
     {
-        return '<link rel="preload" href="'.$this->cachedAssetUrl($url).'" as="style" onload="this.rel=\'stylesheet\'">';
+        return '<link '.self::arrayToAttr($attrs).' rel="preload" href="'.$this->cachedAssetUrl($url).'" as="style" onload="this.rel=\'stylesheet\'">';
     }
 
     /**
      * @param {string} $url
-     * @return string
+     * @return {string}
      */
-    public function linkJS(string $url)
+    public function linkJS(string $url, $attrs = [])
     {
-        return '<script defer type="text/javascript" src="'.$this->cachedAssetUrl($url).'"></script>';
+        return '<script '.self::arrayToAttr($attrs).' type="text/javascript" src="'.$this->cachedAssetUrl($url).'"></script>';
     }
 
     /**
      * @param {string} $url
-     * @return string
+     * @return {string}
      */
     public function inlineCSS(string $url)
     {
@@ -115,7 +115,7 @@ HTML;
 
     /**
      * @param {string} $url
-     * @return string
+     * @return {string}
      */
     public function inlineJS(string $url)
     {
@@ -132,7 +132,7 @@ HTML;
 
     /**
      * @param {string} $url
-     * @return string
+     * @return {string}
      */
     private function getFilePath(string $url)
     {
@@ -147,11 +147,43 @@ HTML;
 
     /**
      * @param {string} $url
-     * @return string
+     * @return {string}
      */
     private function getFileContents(string $url)
     {
         $filePath = $this->getFilePath($url);
         return file_get_contents($filePath);
+    }
+
+    /**
+     * @param {array} $attrs
+     * @return string
+     */
+    private static function arrayToAttr(array $attrs)
+    {
+        $attr_string = '';
+
+        foreach ($attrs as $key => $value) {
+
+            switch (true) {
+
+                case $value === null:
+                    $attr_string .= $key;
+                    break;
+
+                case !ctype_digit($key) && is_int($key):
+                    $attr_string .= $value;
+                    break;
+
+                default:
+                    $attr_string .= $key.'="'.json_encode($value).'"';
+                    break;
+
+            }
+
+            $attr_string .= ' ';
+        }
+
+        return rtrim($attr_string);
     }
 }

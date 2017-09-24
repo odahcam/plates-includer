@@ -79,17 +79,17 @@ class Includer implements ExtensionInterface
     }
 
     /**
-     * @param {string} $url
-     * @return {string}
+     * @param string $url
+     * @return string
      */
     public function linkCSS(string $url, $attrs = [])
     {
-        return '<link '.self::arrayToAttr($attrs).' rel="preload" href="'.$this->cachedAssetUrl($url).'" as="style" onload="this.rel=\'stylesheet\'">';
+        return '<link '.self::arrayToAttr($attrs).' rel="preload" href="'.$this->cachedAssetUrl($url).'"\>';
     }
 
     /**
-     * @param {string} $url
-     * @return {string}
+     * @param string $url
+     * @return string
      */
     public function linkJS(string $url, $attrs = [])
     {
@@ -97,8 +97,8 @@ class Includer implements ExtensionInterface
     }
 
     /**
-     * @param {string} $url
-     * @return {string}
+     * @param string $url
+     * @return string
      */
     public function inlineCSS(string $url)
     {
@@ -114,8 +114,8 @@ HTML;
     }
 
     /**
-     * @param {string} $url
-     * @return {string}
+     * @param string $url
+     * @return string
      */
     public function inlineJS(string $url)
     {
@@ -131,8 +131,8 @@ HTML;
     }
 
     /**
-     * @param {string} $url
-     * @return {string}
+     * @param string $url
+     * @return string
      */
     private function getFilePath(string $url)
     {
@@ -146,8 +146,8 @@ HTML;
     }
 
     /**
-     * @param {string} $url
-     * @return {string}
+     * @param string $url
+     * @return string
      */
     private function getFileContents(string $url)
     {
@@ -156,7 +156,7 @@ HTML;
     }
 
     /**
-     * @param {array} $attrs
+     * @param array $attrs
      * @return string
      */
     private static function arrayToAttr(array $attrs)
@@ -176,7 +176,7 @@ HTML;
                     break;
 
                 default:
-                    $attr_string .= $key.'="'.json_encode($value).'"';
+                    $attr_string .= $key.'="'.trim(json_encode($value), '"').'"';
                     break;
 
             }

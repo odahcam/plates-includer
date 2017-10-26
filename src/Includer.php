@@ -84,7 +84,7 @@ class Includer implements ExtensionInterface
      */
     public function linkCSS(string $url, $attrs = [])
     {
-        return '<link '.self::arrayToAttr($attrs).' rel="preload" href="'.$this->cachedAssetUrl($url).'"\>';
+        return '<link '.self::arrayToAttr($attrs).' href="'.$this->cachedAssetUrl($url).'"\>';
     }
 
     /**

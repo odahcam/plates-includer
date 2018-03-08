@@ -95,7 +95,7 @@ class Includer implements ExtensionInterface
      */
     public function preloadCSS(string $url, array $attrs = []): string
     {
-        $prelaod_attrs = [
+        $preload_attrs = [
             'rel' => 'preload',
             'as' => 'style',
             'onload' => 'this.onload=null;this.rel=\'stylesheet\'',

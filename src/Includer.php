@@ -67,12 +67,18 @@ class Includer implements ExtensionInterface
         $lastUpdated = filemtime($filePath);
         $pathInfo = pathinfo($url);
 
-        if ($pathInfo['dirname'] === '.') {
-            $directory = '';
-        } elseif ($pathInfo['dirname'] === '/') {
-            $directory = '/';
-        } else {
-            $directory = $pathInfo['dirname'] . '/';
+        switch ($pathInfo['dirname']) {
+            case '.':
+                $directory = '';
+                break;
+
+            case '/':
+                $directory = '/';
+                break;
+
+            default:
+                $directory = $pathInfo['dirname'] . '/';
+                break;
         }
 
         if ($this->filenameMethod) {

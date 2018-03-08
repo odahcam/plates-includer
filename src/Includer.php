@@ -9,18 +9,21 @@ class Includer implements ExtensionInterface
 {
     /**
      * Instance of the current template.
+     *
      * @var Template
      */
     public $template;
 
     /**
      * Path to asset directory.
+     *
      * @var string
      */
     public $path;
 
     /**
      * Enables the filename method.
+     *
      * @var boolean
      */
     public $filenameMethod;
@@ -30,7 +33,7 @@ class Includer implements ExtensionInterface
      * @param string  $path
      * @param boolean $filenameMethod
      */
-    public function __construct($path, $filenameMethod = false)
+    public function __construct(string $path, $filenameMethod = false)
     {
         $this->path = rtrim($path, '/');
         $this->filenameMethod = $filenameMethod;
@@ -38,10 +41,10 @@ class Includer implements ExtensionInterface
 
     /**
      * Register extension function.
+     *
      * @param Engine $engine
-     * @return null
      */
-    public function register(Engine $engine)
+    public function register(Engine $engine): void
     {
         $engine->registerFunction('assetUrl', [$this, 'cachedAssetUrl']);
 
@@ -49,14 +52,15 @@ class Includer implements ExtensionInterface
         $engine->registerFunction('linkJS', [$this, 'linkJS']);
         $engine->registerFunction('inlineCSS', [$this, 'inlineCSS']);
         $engine->registerFunction('inlineJS', [$this, 'inlineJS']);
+        $engine->registerFunction('preloadCSS', [$this, 'preloadCSS']);
     }
 
     /**
      * Create "cache busted" asset URL.
-     * @param  string $url
-     * @return string
+     *
+     * @param string $url
      */
-    public function cachedAssetUrl($url)
+    public function cachedAssetUrl(string $url): string
     {
         $filePath = $this->getFilePath($url);
 
@@ -72,35 +76,46 @@ class Includer implements ExtensionInterface
         }
 
         if ($this->filenameMethod) {
-            return $directory.$pathInfo['filename'].'.'.$lastUpdated.'.'.$pathInfo['extension'];
+            return $directory . $pathInfo['filename'] . '.' . $lastUpdated . '.' . $pathInfo['extension'];
         }
 
-        return $directory.$pathInfo['filename'].'.'.$pathInfo['extension'].'?v='.$lastUpdated;
+        return $directory . $pathInfo['filename'] . '.' . $pathInfo['extension'] . '?v=' . $lastUpdated;
     }
 
     /**
      * @param string $url
-     * @return string
      */
-    public function linkCSS(string $url, $attrs = [])
+    public function linkCSS(string $url, array $attrs = []): string
     {
-        return '<link '.self::arrayToAttr($attrs).' href="'.$this->cachedAssetUrl($url).'"\>';
+        return '<link ' . self::arrayToAttr($attrs) . ' href="' . $this->cachedAssetUrl($url) . '">';
     }
 
     /**
      * @param string $url
-     * @return string
      */
-    public function linkJS(string $url, $attrs = [])
+    public function preloadCSS(string $url, array $attrs = []): string
     {
-        return '<script '.self::arrayToAttr($attrs).' type="text/javascript" src="'.$this->cachedAssetUrl($url).'"></script>';
+        $prelaod_attrs = [
+            'rel' => 'preload',
+            'as' => 'style',
+            'onload' => 'this.onload=null;this.rel=\'stylesheet\'',
+        ];
+
+        return $this->linkCSS($url, array_merge($preload_attrs, $attrs));
     }
 
     /**
      * @param string $url
-     * @return string
      */
-    public function inlineCSS(string $url)
+    public function linkJS(string $url, array $attrs = []): string
+    {
+        return '<script ' . self::arrayToAttr($attrs) . ' type="text/javascript" src="' . $this->cachedAssetUrl($url) . '"></script>';
+    }
+
+    /**
+     * @param string $url
+     */
+    public function inlineCSS(string $url): string
     {
         $fileContents = $this->getFileContents($url);
 
@@ -115,9 +130,8 @@ HTML;
 
     /**
      * @param string $url
-     * @return string
      */
-    public function inlineJS(string $url)
+    public function inlineJS(string $url): string
     {
         $fileContents = $this->getFileContents($url);
 
@@ -132,11 +146,10 @@ HTML;
 
     /**
      * @param string $url
-     * @return string
      */
-    private function getFilePath(string $url)
+    private function getFilePath(string $url): string
     {
-        $filePath = $this->path.'/'.ltrim($url, '/');
+        $filePath = $this->path . '/' . ltrim($url, '/');
 
         if (!file_exists($filePath)) {
             throw new \LogicException('Unable to locate the asset "' . $url . '" in the "' . $this->path . '" directory.');
@@ -147,19 +160,19 @@ HTML;
 
     /**
      * @param string $url
-     * @return string
      */
-    private function getFileContents(string $url)
+    private function getFileContents(string $url): ?string
     {
         $filePath = $this->getFilePath($url);
-        return file_get_contents($filePath);
+        $file_contents = file_get_contents($filePath);
+
+        return $file_contents ? $file_contents : null;
     }
 
     /**
      * @param array $attrs
-     * @return string
      */
-    private static function arrayToAttr(array $attrs)
+    private static function arrayToAttr(array $attrs): string
     {
         $attr_string = '';
 
@@ -176,7 +189,7 @@ HTML;
                     break;
 
                 default:
-                    $attr_string .= $key.'="'.trim(json_encode($value), '"').'"';
+                    $attr_string .= $key . '="' . trim(json_encode($value), '"') . '"';
                     break;
 
             }
